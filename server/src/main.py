@@ -10,6 +10,7 @@ def healthcheck():
     """Check if API is up and running."""
     return {"status": "ok"}
 
+
 app = FastAPI(
     title="volocopter_code_challenge",
     description="""Volocopter Code Challenge API.""",
