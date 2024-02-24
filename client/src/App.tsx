@@ -1,4 +1,6 @@
-import { DragEvent, useCallback, useState } from "react";
+import { useRef } from "react";
+import { useDraggable, useDropzone } from "./drag-hook";
+import { DataType } from "./drag-dom";
 
 type FlightType = "pre" | "now" | "post";
 
@@ -58,50 +60,40 @@ const flights: Record<FlightType, Flight[]> = {
   ],
 };
 
+const DraggableElement = ({ data }: any) => {
+  const liRef = useRef<HTMLLIElement>(null);
+  useDraggable<HTMLLIElement, typeof data>(liRef, data);
+  return (
+    <li
+      draggable="true"
+      ref={liRef}
+    >
+      <h3>{data.name}</h3>
+      <i>{data.id}</i>
+      <p>{data.desc}</p>
+    </li>
+  );
+};
+
+const DropZoneElement = ({ children }: any) => {
+  const ulRef = useRef<HTMLUListElement>(null);
+
+  useDropzone<HTMLUListElement, Flight>(
+    ulRef,
+    DataType.JSON,
+    (data) => {
+      console.log(data);
+    },
+  );
+
+  return (
+    <ul ref={ulRef}>
+      {children}
+    </ul>
+  );
+};
+
 export const App = () => {
-  const [flightss, setFlights] = useState({ ...flights });
-
-  const drag = useCallback(
-    function drag(eventName: string, event: DragEvent, id: number) {
-      if (eventName == "onDragStart") {
-        event.dataTransfer.clearData();
-        event.dataTransfer.setData(
-          "text/plain",
-          `${id}-${event.currentTarget.className}`,
-        );
-      }
-      console.log(
-        eventName,
-        event.currentTarget.id,
-        id,
-      );
-    },
-    [flightss],
-  );
-
-  const dragDrop = useCallback(
-    function dragDrop(eventName: string, event: DragEvent) {
-      const data = event.dataTransfer.getData("text");
-      const id = parseInt(data.split("-")[0]);
-      const type: FlightType = data.split("-")[1] as FlightType;
-      const dropID: FlightType = event.currentTarget.id as FlightType;
-      let dragged: Flight = flightss[type].find((i) => i.id === id) as Flight;
-
-      let newOne = [...flightss[dropID], dragged];
-      setFlights({
-        ...flightss,
-        [dropID]: newOne,
-        [type]: flightss[type].filter((i) => i.id !== id),
-      });
-      console.log(
-        event,
-        eventName,
-        data,
-      );
-    },
-    [flightss],
-  );
-
   return (
     <div
       style={{
@@ -111,78 +103,23 @@ export const App = () => {
         padding: "20px",
       }}
     >
-      <ul
-        onDragOver={(event: DragEvent) => event.preventDefault()}
-        onDrop={(event: DragEvent) => dragDrop("onDrop", event)}
-        id="pre"
-      >
-        {flightss.pre.map((f) => (
-          <li
-            className="pre"
-            key={`pre-flg-${f.id}`}
-            id={`pre-flg-${f.id}`}
-            data-id={f.id}
-            draggable="true"
-            onDragStart={(event: DragEvent) => drag("onDragStart", event, f.id)}
-            onDragEnter={(event: DragEvent) => drag("onDragEnter", event, f.id)}
-            onDragEnd={(event: DragEvent) => drag("onDragEnd", event, f.id)}
-            onDragExit={(event: DragEvent) => drag("onDragExit", event, f.id)}
-            onDragLeave={(event: DragEvent) => drag("onDragLeave", event, f.id)}
-          >
-            <h3>{f.name}</h3>
-            <i>{f.id}</i>
-            <p>{f.desc}</p>
-          </li>
+      <DropZoneElement>
+        {flights.pre.map((flight) => (
+          <DraggableElement key={`pre-${flight.id}`} data={flight} />
         ))}
-      </ul>
-      <ul
-        onDragOver={(event: DragEvent) => event.preventDefault()}
-        onDrop={(event: DragEvent) => dragDrop("onDrop", event)}
-        id="now"
-      >
-        {flightss.now.map((f) => (
-          <li
-            className="now"
-            key={`now-flg-${f.id}`}
-            id={`now-flg-${f.id}`}
-            data-id={f.id}
-            draggable="true"
-            onDragStart={(event: DragEvent) => drag("onDragStart", event, f.id)}
-            onDragEnter={(event: DragEvent) => drag("onDragEnter", event, f.id)}
-            onDragEnd={(event: DragEvent) => drag("onDragEnd", event, f.id)}
-            onDragExit={(event: DragEvent) => drag("onDragExit", event, f.id)}
-            onDragLeave={(event: DragEvent) => drag("onDragLeave", event, f.id)}
-          >
-            <h3>{f.name}</h3>
-            <i>{f.id}</i>
-            <p>{f.desc}</p>
-          </li>
+      </DropZoneElement>
+
+      <DropZoneElement>
+        {flights.now.map((flight) => (
+          <DraggableElement key={`now-${flight.id}`} data={flight} />
         ))}
-      </ul>
-      <ul
-        onDragOver={(event: DragEvent) => event.preventDefault()}
-        onDrop={(event: DragEvent) => dragDrop("onDrop", event)}
-        id="post"
-      >
-        {flightss.post.map((f) => (
-          <li
-            key={`post-flg-${f.id}`}
-            id={`post-flg-${f.id}`}
-            className="post"
-            data-id={f.id}
-            draggable="true"
-            onDragStart={(event: DragEvent) => drag("onDragStart", event, f.id)}
-            onDragEnter={(event: DragEvent) => drag("onDragEnter", event, f.id)}
-            onDragEnd={(event: DragEvent) => drag("onDragEnd", event, f.id)}
-            onDragExit={(event: DragEvent) => drag("onDragExit", event, f.id)}
-            onDragLeave={(event: DragEvent) => drag("onDragLeave", event, f.id)}
-          >
-            <h3>{f.name}</h3>
-            <i>{f.id}</i>
-            <p>{f.desc}</p>
-          </li>
+      </DropZoneElement>
+
+      <DropZoneElement>
+        {flights.post.map((flight) => (
+          <DraggableElement key={`post-${flight.id}`} data={flight} />
         ))}
-      </ul>
+      </DropZoneElement>
     </div>
   );
 };
