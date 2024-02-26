@@ -2,7 +2,9 @@ import { ReactNode, useRef } from "react";
 
 import { useDropzone } from "../drag-hook";
 import { DataType } from "../drag-dom";
+import { useFlightUpdate } from "../hooks";
 import { FlightStatus, FlightType } from "../models";
+
 
 interface FlightColumnProps {
   children: ReactNode;
@@ -11,16 +13,17 @@ interface FlightColumnProps {
 
 export default function FlightColumn({ children, status }: FlightColumnProps) {
   const ulRef = useRef<HTMLUListElement>(null);
+  const { loading, updateFlight } = useFlightUpdate();
 
   useDropzone<HTMLUListElement, FlightType>(
     ulRef,
     DataType.JSON,
     (data) => {
       if (data.status !== status) {
-        console.log(`change: ${data.status} => ${status}`);
+        updateFlight(data, data.id);
       }
     },
   );
 
-  return <ul className={`flight-column-${status}`} ref={ulRef}>{children}</ul>;
+  return <ul data-loading={loading} className={`flight-column-${status}`} ref={ulRef}>{children}</ul>;
 }
