@@ -21,7 +21,7 @@ function IconButton({ icon: Icon, onClick }: IconButtonProps): JSX.Element {
 }
 
 function FlatButton({ onClick, text }: ButtonProps): JSX.Element {
-  return <button className="btn icon-btn" onClick={onClick}>{text}</button>;
+  return <button className="btn flat-btn" onClick={onClick}>{text}</button>;
 }
 
 export { FlatButton, IconButton };

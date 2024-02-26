@@ -25,7 +25,7 @@ const BASE_URL = env().VOLO_API_URL;
 export async function get<T>(
   endpoint: string,
   id?: string,
-): Promise<HttpResponse<T> | HttpError> {
+): Promise<HttpResponse<T> | never> {
   try {
     const idPath = createIdPath(id);
     const response = await fetch(`${BASE_URL}${endpoint}${idPath}`);
@@ -38,19 +38,19 @@ export async function get<T>(
     const data = await response.json();
     return { data, status: response.status } as HttpResponse<T>;
   } catch (error) {
-    return error as HttpError;
+    throw error;
   }
 }
 
 export async function post<T>(
   endpoint: string,
   body: any,
-): Promise<HttpResponse<T> | HttpError> {
+): Promise<HttpResponse<T> | never> {
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "POST",
       headers: createHeader(),
-      body,
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
@@ -62,7 +62,7 @@ export async function post<T>(
     const data = await response.json();
     return { data, status: response.status } as HttpResponse<T>;
   } catch (error) {
-    return error as HttpError;
+    throw error;
   }
 }
 
@@ -70,13 +70,13 @@ export async function patch<T>(
   endpoint: string,
   body: any,
   id?: string,
-): Promise<HttpResponse<T> | HttpError> {
+): Promise<HttpResponse<T> | never> {
   try {
     const idPath = createIdPath(id);
     const response = await fetch(`${BASE_URL}${endpoint}${idPath}`, {
       method: "PATCH",
       headers: createHeader(),
-      body,
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
@@ -88,14 +88,14 @@ export async function patch<T>(
     const data = await response.json();
     return { data, status: response.status } as HttpResponse<T>;
   } catch (error) {
-    return error as HttpError;
+    throw error;
   }
 }
 
 export async function del<T>(
   endpoint: string,
   id?: string,
-): Promise<HttpResponse<T> | HttpError> {
+): Promise<HttpResponse<T> | never> {
   try {
     const idPath = createIdPath(id);
     const response = await fetch(
@@ -114,6 +114,6 @@ export async function del<T>(
     const data = await response.json();
     return { data, status: response.status } as HttpResponse<T>;
   } catch (error) {
-    return error as HttpError;
+    throw error;
   }
 }

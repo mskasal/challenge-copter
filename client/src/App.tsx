@@ -1,7 +1,3 @@
-import { useRef } from "react";
-import { useDraggable, useDropzone } from "./drag-hook";
-import { DataType } from "./drag-dom";
-import { removeFlightById } from "./services/flights.service";
 import Flight from "./components/Flight.component";
 import FlightColumn from "./components/FlightColumn.component";
 

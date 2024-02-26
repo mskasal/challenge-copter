@@ -1,28 +1,22 @@
+import { FlightType } from "../models";
 import { del, get, patch, post } from "./http.service";
 
-interface FlightData {
-  id: string;
-  title: string;
-  description: string;
-  status: string;
-}
-
 export async function getFlights() {
-  return await get<FlightData>("/flights");
+  return await get<FlightType[]>("/flights");
 }
 
 export async function getFlightById(id: string) {
-  return await get<FlightData>("/flights", id);
+  return await get<FlightType>("/flight", id);
 }
 
-export async function saveFlight(data: FlightData) {
-  return await post<FlightData>("/flights", data);
+export async function saveFlight(data: FlightType) {
+  return await post<FlightType>("/flight", data);
 }
 
-export async function updateFlightById(data: FlightData, id: string) {
-  return await patch<FlightData>("/flights", data, id);
+export async function updateFlightById(data: FlightType, id: string) {
+  return await patch<FlightType>("/flight", data, id);
 }
 
 export async function removeFlightById(id: string) {
-  return await del<FlightData>("/flights", id);
+  return await del<FlightType>("/flight", id);
 }

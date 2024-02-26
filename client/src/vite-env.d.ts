@@ -2,4 +2,3 @@
 interface ImportMetaEnv {
   readonly VOLO_API_URL: string
 }
-
