@@ -37,12 +37,13 @@ export function DeleteDialog({ isOpen, onCancel, id }: DialogProps) {
       </p>
       {error && <p className="error">{error.message}</p>}
       <div className="btn-group">
-        <FlatButton onClick={onCancel} text="Cancel" autoFocus />
+        <FlatButton onClick={onCancel} text="Cancel" />
         <FlatButton
+          className="btn flat-btn primary"
           disabled={loading}
           onClick={onSubmit}
           text="Delete"
-          className="btn flat-btn primary"
+          autoFocus
         />
       </div>
       {error && <p>{error?.message}</p>}
