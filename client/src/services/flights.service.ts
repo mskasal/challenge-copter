@@ -1,4 +1,4 @@
-import { FlightType } from "../models";
+import { FlightType, FlightTypePreview } from "../models";
 import { del, get, patch, post } from "./http.service";
 
 export async function getFlights() {
@@ -9,8 +9,8 @@ export async function getFlightById(id: string) {
   return await get<FlightType>("/flight", id);
 }
 
-export async function saveFlight(data: FlightType) {
-  return await post<FlightType>("/flight", data);
+export async function saveFlight(data: FlightTypePreview) {
+  return await post<FlightTypePreview>("/flight", data);
 }
 
 export async function updateFlightById(data: FlightType, id: string) {

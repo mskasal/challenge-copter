@@ -6,3 +6,5 @@ export type FlightType = {
   desc: string;
   status: FlightStatus;
 };
+
+export type FlightTypePreview = Omit<FlightType, 'id'>;

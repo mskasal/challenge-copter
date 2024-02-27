@@ -6,6 +6,7 @@ import { FlightType } from "../models";
 
 import { IconButton } from "./Buttons";
 import { Icons } from "./Icons";
+import { DialogType, useDialog } from "../contexts/Dialogs.context";
 
 interface FlightProps {
   flight: FlightType;
@@ -13,8 +14,9 @@ interface FlightProps {
 
 export default function Flight({ flight }: FlightProps) {
   const liRef = useRef<HTMLLIElement>(null);
+  const {openDialog} = useDialog();
+
   useDraggable<HTMLLIElement, FlightType>(liRef, flight);
-  const { deleteFlight, loading } = useFlightDelete();
 
   return (
     <li className={`flight-${flight.status}`} draggable ref={liRef}>
@@ -22,8 +24,7 @@ export default function Flight({ flight }: FlightProps) {
         <h3>{flight.title}</h3>
         <IconButton
           icon={Icons.bin}
-          onClick={() => deleteFlight(flight.id)}
-          disabled={loading}
+          onClick={() => openDialog(DialogType.DELETE, flight.id)} 
         >
         </IconButton>
       </div>
