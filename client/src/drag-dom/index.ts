@@ -45,11 +45,18 @@ export function bindDragEvents(
   };
 }
 
+export type BindDropType = {
+  element: HTMLElement;
+  onDrop: (data: NativeData) => void;
+  onDragOver: () => void;
+  onDragLeave: () => void;
+  dataType: DataType;
+};
+
 export function bindDropEvents(
-  element: HTMLElement,
-  onDrop: (data: NativeData) => void,
-  dataType: DataType,
+  { onDrop, element, dataType, onDragOver, onDragLeave }: BindDropType,
 ): NativeDragBindings {
+
   const _dropListener: EventListener = (event: Event) => {
     const data = (event as DragEvent).dataTransfer?.getData(dataType);
 
@@ -66,6 +73,12 @@ export function bindDropEvents(
 
   const _dragOverListener: EventListener = (event: Event) => {
     event.preventDefault();
+    onDragOver();
+  };
+
+  const _dragLeaveListener: EventListener = (event: Event) => {
+    event.preventDefault();
+    onDragLeave();
   };
 
   element.addEventListener(
@@ -78,9 +91,15 @@ export function bindDropEvents(
     _dragOverListener,
   );
 
+  element.addEventListener(
+    "dragleave",
+    _dragLeaveListener,
+  );
+
   const unbind = () => {
     element.removeEventListener("drop", _dropListener);
-    element.removeEventListener("dragged", _dragOverListener);
+    element.removeEventListener("dragover", _dragOverListener);
+    element.removeEventListener("dragleave", _dragLeaveListener);
   };
 
   return {

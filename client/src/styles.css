@@ -1,0 +1,230 @@
+:root {
+  --orange: #fa8f2c;
+  --green: #49cd80;
+  --light-green: #c6f6da;
+  --blue: #457aff;
+  --dark-blue: #334363;
+  --darker-blue: #041439;
+  --light-grey: #e5e7eb;
+  --lighter-grey: #f3f4f5;
+  --bone: #fafafa;
+  --white: #ffffff;
+
+  --main-title: 2rem;
+  --sub-title: 1.5rem;
+  --section-title: 1rem;
+  --card-title: 0.8rem;
+  --paragraph: 0.75rem;
+  --small: 0.7rem;
+}
+
+body {
+  font-family: Roboto, system-ui;
+  background: var(--bone);
+}
+
+.flight-mission-container {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: auto;
+  min-width: 40vw;
+
+  .flight-mission-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.flights-view {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 15px;
+}
+
+[class^="flight-column-"] {
+  display: grid;
+  align-items: start;
+  justify-content: normal;
+  align-content: start;
+  min-height: 70vh;
+  gap: 10px;
+  background: var(--lighter-grey);
+  border-radius: 8px;
+  list-style: none;
+  padding: 1rem;
+
+  &[data-loading="true"] {
+    opacity: 0.7;
+  }
+
+  &[data-drag-over="true"] {
+    opacity: 0.7;
+    outline-style: dashed;
+    outline-color: var(--green);
+    outline-width: 1px;
+  }
+
+  h4 {
+    font-size: var(--section-title);
+    padding: 0;
+    margin: 0 0 10px;
+  }
+
+  [class^="flight-card-"] {
+    cursor: grab;
+    padding: 0.7rem;
+    border-style: solid;
+    border-width: 1px 1px 1px 4px;
+    border-radius: 8px;
+    background: var(--white);
+
+    &[class$="pre"] {
+      border-color: var(--orange);
+    }
+
+    &[class$="now"] {
+      border-color: var(--blue);
+    }
+
+    &[class$="post"] {
+      border-color: var(--green);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--light-grey);
+      padding-bottom: 5px;
+
+      button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: none;
+        background: transparent;
+        padding: 2px;
+      }
+
+      h5 {
+        font-size: var(--card-title);
+        font-weight: 600;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 80%;
+      }
+    }
+
+    .footer {
+      font-size: var(--paragraph);
+    }
+  }
+}
+
+dialog {
+  top: 0;
+  bottom: 0;
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  width: 60vw;
+  max-width: 600px;
+  padding: 18px 35px;
+
+  h3 {
+    border-bottom: 1px solid var(--light-grey);
+    padding-bottom: 5px;
+    font-size: var(--sub-title);
+    color: var(--dark-blue);
+
+    span {
+      font-weight: lighter;
+    }
+  }
+
+  input {
+    height: 30px;
+    width: 100%;
+    background: var(--white);
+    border: none;
+    outline: none;
+    border-radius: 8px;
+    padding-left: 0.5rem;
+    border: 1px solid var(--light-grey);
+    margin-top: 0.4rem;
+  }
+
+  label {
+    font-size: var(--paragraph);
+    font-weight: bold;
+    color: var(--dark-blue);
+    opacity: 0.7;
+  }
+
+  p {
+    padding: 0.75rem 0;
+  }
+
+  form {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .btn-group {
+    margin-top: 1.5rem;
+  }
+
+  .error {
+    font-size: var(--small);
+    color: orangered;
+  }
+}
+
+::backdrop {
+  backdrop-filter: blur(10px);
+}
+
+.btn {
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.flat-btn {
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--dark-blue);
+  background: var(--light-grey);
+  padding: 10px 12px;
+  outline: none;
+  border: none;
+  border-radius: 8px;
+
+  &.primary {
+    color: var(--white);
+    background: var(--dark-blue);
+  }
+}
+
+.btn-group {
+  display: flex;
+  justify-content: end;
+  gap: 2px;
+
+  .btn:nth-child(1) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .btn:nth-child(2) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}

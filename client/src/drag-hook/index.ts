@@ -55,13 +55,29 @@ export function useDropzone<
 ) {
   const dragTargetRef = useRef<EventTarget>(null);
 
+  const setDragAttribute = (value: boolean) => {
+    (dragTargetRef.current as HTMLUListElement).setAttribute(
+      "data-drag-over",
+      value.toString(),
+    );
+  };
+
   const catchData = (data: NativeData) => {
     try {
       const deserilizedData = deserilize(data.value);
       onDrop(deserilizedData);
+      setDragAttribute(false);
     } catch (error) {
       console.error(error, "Cannot deserilize data!");
     }
+  };
+
+  const onDragOver = () => {
+    setDragAttribute(true);
+  };
+
+  const onDragLeave = () => {
+    setDragAttribute(false);
   };
 
   useEffect(() => {
@@ -69,11 +85,13 @@ export function useDropzone<
       throw "useDropzone requires valid ElementRef";
     }
 
-    const { elementRef, unbind } = bindDropEvents(
-      ref.current,
-      catchData,
-      acceptedDataType,
-    );
+    const { elementRef, unbind } = bindDropEvents({
+      element: ref.current,
+      onDrop: catchData,
+      dataType: acceptedDataType,
+      onDragOver,
+      onDragLeave,
+    });
 
     const newRef = { current: elementRef };
 

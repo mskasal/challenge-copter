@@ -20,8 +20,8 @@ function IconButton({ icon: Icon, onClick }: IconButtonProps): JSX.Element {
   );
 }
 
-function FlatButton({ onClick, text }: ButtonProps): JSX.Element {
-  return <button className="btn flat-btn" onClick={onClick}>{text}</button>;
+function FlatButton({ onClick, text, ...btnProps }: ButtonProps): JSX.Element {
+  return <button className="btn flat-btn" onClick={onClick} {...btnProps}>{text}</button>;
 }
 
 export { FlatButton, IconButton };
