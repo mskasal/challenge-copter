@@ -1,9 +1,10 @@
 import { useCallback, useState } from "react";
 
-import { FlightType } from "./models";
+import { FlightType, FlightTypePreview } from "./models";
 import {
   getFlights,
   removeFlightById,
+  saveFlight,
   updateFlightById,
 } from "./services/flights.service";
 import { HttpError } from "./services/http.service";
@@ -58,13 +59,13 @@ export function useFlightDelete() {
 
 export function useFlightAdd() {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<FlightType | null>(null);
+  const [data, setData] = useState<FlightTypePreview | null>(null);
   const [error, setError] = useState<HttpError | null>(null);
 
-  const addFlight = useCallback((data: FlightType, id: string) => {
+  const addFlight = useCallback((data: FlightTypePreview) => {
     setLoading(true);
 
-    updateFlightById(data, id)
+    saveFlight(data)
       .then(
         (response) => setData(response.data),
       )
