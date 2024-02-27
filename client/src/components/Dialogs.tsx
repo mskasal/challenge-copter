@@ -1,4 +1,4 @@
-import { FormEvent, useRef } from "react";
+import { FormEvent, useEffect, useRef } from "react";
 import { useFlightAdd, useFlightDelete } from "../hooks";
 
 import { FlatButton } from "./Buttons";
@@ -11,20 +11,39 @@ interface DialogProps {
 }
 
 export function DeleteDialog({ isOpen, onCancel, id }: DialogProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const { deleteFlight, loading, error } = useFlightDelete();
   const onSubmit = () => {
     deleteFlight(id!);
     console.log(id);
   };
 
+  useEffect(() => {
+    if (isOpen && dialogRef.current) {
+      dialogRef.current?.showModal();
+    }
+    if (!isOpen && dialogRef.current) {
+      dialogRef.current.close();
+    }
+  }, [isOpen, dialogRef]);
+
   return (
-    <dialog open={isOpen}>
+    <dialog ref={dialogRef}>
       <h3>
         DELETE - <span>Mission</span>
       </h3>
+      <p>
+        Are you sure? You can't undo this afterwards.
+      </p>
+      {error && <p className="error">{error.message}</p>}
       <div className="btn-group">
         <FlatButton onClick={onCancel} text="Cancel" autoFocus />
-        <FlatButton disabled={loading} onClick={onSubmit} text="Submit" />
+        <FlatButton
+          disabled={loading}
+          onClick={onSubmit}
+          text="Delete"
+          className="btn flat-btn primary"
+        />
       </div>
       {error && <p>{error?.message}</p>}
     </dialog>
@@ -33,6 +52,8 @@ export function DeleteDialog({ isOpen, onCancel, id }: DialogProps) {
 
 export function AddDialog({ isOpen, onCancel }: DialogProps) {
   const formRef = useRef<HTMLFormElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
   const { addFlight, loading, error } = useFlightAdd();
 
   const onSubmit = (event: FormEvent) => {
@@ -50,8 +71,18 @@ export function AddDialog({ isOpen, onCancel }: DialogProps) {
     }
   };
 
+  useEffect(() => {
+    if (isOpen && dialogRef.current) {
+      dialogRef.current?.showModal();
+    }
+    if (!isOpen && dialogRef.current) {
+      dialogRef.current.close();
+      formRef.current?.reset();
+    }
+  }, [isOpen, dialogRef]);
+
   return (
-    <dialog open={true || isOpen}>
+    <dialog ref={dialogRef}>
       <h3>
         ADD - <span>Mission</span>
       </h3>
@@ -69,15 +100,20 @@ export function AddDialog({ isOpen, onCancel }: DialogProps) {
           Description:
           <input id="desc" name="desc" type="text" />
         </label>
+        {error && <p className="error">{error.message}</p>}
         <div className="btn-group">
-          <FlatButton onClick={onCancel} text="Cancel" type="button" />
+          <FlatButton
+            onClick={onCancel}
+            text="Cancel"
+            type="button"
+          />
           <FlatButton
             disabled={loading}
             text="Create"
             type="submit"
+            className="btn flat-btn primary"
           />
         </div>
-        {error && <p>{error.message}</p>}
       </form>
     </dialog>
   );
