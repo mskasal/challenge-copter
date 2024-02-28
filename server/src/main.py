@@ -67,10 +67,10 @@ def get_all_flights():
     """
     results = execute_query(query)
     flights = []
-    for result in results:
-        flights.append(dict(zip(['id', 'title', 'status', 'description'], result)))
+    if results:
+        for result in results:
+            flights.append(dict(zip(['id', 'title', 'status', 'description'], result)))
     return flights
-
 
 @api_router.post("/flights/", response_model=Flight)
 def create_flight(flight: FlightPreview):

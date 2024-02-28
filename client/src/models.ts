@@ -8,3 +8,5 @@ export type FlightType = {
 };
 
 export type FlightTypePreview = Omit<FlightType, 'id'>;
+
+export type MappedFlights = Map<FlightStatus, FlightType[]>;

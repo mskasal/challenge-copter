@@ -3,6 +3,7 @@ import { useFlightAdd, useFlightDelete } from "../hooks";
 
 import { FlatButton } from "./Buttons";
 import { FlightTypePreview } from "../models";
+import { useFlights } from "../contexts/Flights.context";
 
 interface DialogProps {
   isOpen: boolean;
@@ -12,11 +13,16 @@ interface DialogProps {
 
 export function DeleteDialog({ isOpen, onCancel, id }: DialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const { fetchFlights } = useFlights();
   const { deleteFlight, loading, error } = useFlightDelete();
 
   const onSubmit = () => {
-    deleteFlight(id!);
-    dialogRef.current!.close();
+    deleteFlight(id!, {
+      onSuccess: () => {
+        dialogRef.current!.close();
+        fetchFlights();
+      },
+    });
   };
 
   useEffect(() => {
@@ -25,6 +31,7 @@ export function DeleteDialog({ isOpen, onCancel, id }: DialogProps) {
     }
     if (!isOpen && dialogRef.current) {
       dialogRef.current.close();
+      onCancel();
     }
   }, [isOpen, dialogRef]);
 
@@ -55,6 +62,7 @@ export function DeleteDialog({ isOpen, onCancel, id }: DialogProps) {
 export function AddDialog({ isOpen, onCancel }: DialogProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const { fetchFlights } = useFlights();
 
   const { addFlight, loading, error } = useFlightAdd();
 
@@ -69,9 +77,13 @@ export function AddDialog({ isOpen, onCancel }: DialogProps) {
         status: "pre",
       };
 
-      addFlight(newFlight);
-      dialogRef.current!.close();
-      formRef.current?.reset();
+      addFlight(newFlight, {
+        onSuccess: () => {
+          dialogRef.current!.close();
+          formRef.current?.reset();
+          fetchFlights();
+        },
+      });
     }
   };
 
@@ -81,6 +93,7 @@ export function AddDialog({ isOpen, onCancel }: DialogProps) {
     }
     if (!isOpen && dialogRef.current) {
       dialogRef.current.close();
+      onCancel();
       formRef.current?.reset();
     }
   }, [isOpen, dialogRef]);

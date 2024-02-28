@@ -1,17 +1,12 @@
-import { useEffect } from "react";
 import { FlatButton } from "./components/Buttons";
 import Flight from "./components/Flight.component";
 import FlightColumn from "./components/FlightColumn.component";
 import { DialogType, useDialog } from "./contexts/Dialogs.context";
-import { useFlightsGet } from "./hooks";
+import { useFlights } from "./contexts/Flights.context";
 
 export const App = () => {
   const { openDialog } = useDialog();
-  const { loading, data: flights, error, fetchFlights } = useFlightsGet();
-
-  useEffect(() => {
-    fetchFlights();
-  }, []);
+  const { flights } = useFlights();
 
   return (
     <div className="flight-mission-container">
