@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef } from "react";
+import { FormEvent, MutableRefObject, RefObject, useRef } from "react";
 import { useFlightAdd, useFlightDelete } from "../hooks";
 
 import { FlatButton } from "./Buttons";
@@ -6,13 +6,12 @@ import { FlightTypePreview } from "../models";
 import { useFlights } from "../contexts/Flights.context";
 
 interface DialogProps {
-  isOpen: boolean;
   onCancel: VoidFunction;
   id?: string;
+  dialogRef: RefObject<HTMLDialogElement>;
 }
 
-export function DeleteDialog({ isOpen, onCancel, id }: DialogProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+export function DeleteDialog({ onCancel, id, dialogRef }: DialogProps) {
   const { fetchFlights } = useFlights();
   const { deleteFlight, loading, error } = useFlightDelete();
 
@@ -25,24 +24,12 @@ export function DeleteDialog({ isOpen, onCancel, id }: DialogProps) {
     });
   };
 
-  useEffect(() => {
-    if (isOpen && dialogRef.current) {
-      dialogRef.current?.showModal();
-    }
-    if (!isOpen && dialogRef.current) {
-      dialogRef.current.close();
-      onCancel();
-    }
-  }, [isOpen, dialogRef]);
-
   return (
     <dialog ref={dialogRef}>
       <h3>
         DELETE - <span>Mission</span>
       </h3>
-      <p>
-        Are you sure? You can't undo this afterwards.
-      </p>
+      <p>Are you sure? You can't undo this afterwards.</p>
       {error && <p className="error">{error.message}</p>}
       <div className="btn-group">
         <FlatButton onClick={onCancel} text="Cancel" />
@@ -59,9 +46,8 @@ export function DeleteDialog({ isOpen, onCancel, id }: DialogProps) {
   );
 }
 
-export function AddDialog({ isOpen, onCancel }: DialogProps) {
+export function AddDialog({ onCancel, dialogRef }: DialogProps) {
   const formRef = useRef<HTMLFormElement>(null);
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const { fetchFlights } = useFlights();
 
   const { addFlight, loading, error } = useFlightAdd();
@@ -87,17 +73,6 @@ export function AddDialog({ isOpen, onCancel }: DialogProps) {
     }
   };
 
-  useEffect(() => {
-    if (isOpen && dialogRef.current) {
-      dialogRef.current?.showModal();
-    }
-    if (!isOpen && dialogRef.current) {
-      dialogRef.current.close();
-      onCancel();
-      formRef.current?.reset();
-    }
-  }, [isOpen, dialogRef]);
-
   return (
     <dialog ref={dialogRef}>
       <h3>
@@ -119,11 +94,7 @@ export function AddDialog({ isOpen, onCancel }: DialogProps) {
         </label>
         {error && <p className="error">{error.message}</p>}
         <div className="btn-group">
-          <FlatButton
-            onClick={onCancel}
-            text="Cancel"
-            type="button"
-          />
+          <FlatButton onClick={onCancel} text="Cancel" type="button" />
           <FlatButton
             disabled={loading}
             text="Create"
