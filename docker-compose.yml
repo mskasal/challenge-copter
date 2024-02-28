@@ -1,15 +1,38 @@
 version: "3.8"
 
 services:
+    database:
+      image: postgres:latest
+      restart: always
+      environment:
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: 12345
+        POSTGRES_DB: volo_db
+      ports:
+        - "5432:5432"
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      networks:
+        - back-tier
+
+
     server:
         build: server/
         command: bash -c "uvicorn src.main:app --host 0.0.0.0 --port 9000 --reload"
         volumes:
             - ./server/src:/server/src
+        environment:
+          DATABASE_HOST: database
+          DATABASE_USER: admin
+          DATABASE_PASSWORD: 12345 
+          DATABASE_NAME: volo_db
+
         ports:
             - 9000
         networks:
             - back-tier
+        depends_on:
+            - database
 
     client:
         build: client/
@@ -44,3 +67,5 @@ networks:
         attachable: true
     back-tier: {}
 
+volumes:
+  postgres_data:

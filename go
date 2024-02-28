@@ -18,3 +18,4 @@ if [[ "$(type $function_name 2>/dev/null)" == *function* ]]; then
 else
     echo "Function '$function_name' not found."
 fi
+
