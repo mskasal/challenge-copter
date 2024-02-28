@@ -20,7 +20,7 @@ export default function FlightColumn({ children, status }: FlightColumnProps) {
     DataType.JSON,
     (data) => {
       if (data.status !== status) {
-        updateFlight(data, data.id);
+        updateFlight({...data, status}, data.id);
       }
     },
   );

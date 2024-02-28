@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-import { FlightType, FlightTypePreview } from "./models";
+import { FlightStatus, FlightType, FlightTypePreview } from "./models";
 import {
   getFlights,
   removeFlightById,
@@ -83,7 +83,10 @@ export function useFlightAdd() {
 
 export function useFlightsGet() {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<FlightType[] | null>(null);
+  const [data, setData] = useState<
+    | MappedFlights
+    | null
+  >(null);
   const [error, setError] = useState<HttpError | null>(null);
 
   const fetchFlights = useCallback(() => {
@@ -91,7 +94,10 @@ export function useFlightsGet() {
 
     getFlights()
       .then(
-        (response) => setData(response.data),
+        (response) => {
+          const mapped = flightsToMap(response.data);
+          setData(mapped);
+        },
       )
       .catch((error) => setError(error))
       .finally(() => setLoading(false));
@@ -103,4 +109,17 @@ export function useFlightsGet() {
     error,
     fetchFlights,
   };
+}
+
+type MappedFlights = Map<FlightStatus, FlightType[]>;
+
+function flightsToMap(flights: FlightType[]): MappedFlights {
+  const flightMap = new Map<FlightStatus, FlightType[]>();
+  flights.forEach((flight) => {
+    if (!flightMap.has(flight.status)) {
+      flightMap.set(flight.status, []);
+    }
+    flightMap.get(flight.status)!.push(flight);
+  });
+  return flightMap;
 }

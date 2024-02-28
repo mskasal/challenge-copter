@@ -28,7 +28,7 @@ export default function Flight({ flight }: FlightProps) {
         </IconButton>
       </div>
       <div className="footer">
-        <p>{flight.desc}</p>
+        <p>{flight.description}</p>
       </div>
     </li>
   );

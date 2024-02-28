@@ -13,9 +13,10 @@ interface DialogProps {
 export function DeleteDialog({ isOpen, onCancel, id }: DialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const { deleteFlight, loading, error } = useFlightDelete();
+
   const onSubmit = () => {
     deleteFlight(id!);
-    console.log(id);
+    dialogRef.current!.close();
   };
 
   useEffect(() => {
@@ -64,11 +65,13 @@ export function AddDialog({ isOpen, onCancel }: DialogProps) {
       const formData = new FormData(formRef.current);
       const newFlight: FlightTypePreview = {
         title: formData.get("title")!.toString(),
-        desc: formData.get("desc")!.toString(),
+        description: formData.get("description")!.toString(),
         status: "pre",
       };
 
       addFlight(newFlight);
+      dialogRef.current!.close();
+      formRef.current?.reset();
     }
   };
 
@@ -97,9 +100,9 @@ export function AddDialog({ isOpen, onCancel }: DialogProps) {
           <input id="title" name="title" type="text" required autoFocus />
         </label>
 
-        <label htmlFor="desc">
+        <label htmlFor="description">
           Description:
-          <input id="desc" name="desc" type="text" />
+          <input id="description" name="description" type="text" />
         </label>
         {error && <p className="error">{error.message}</p>}
         <div className="btn-group">

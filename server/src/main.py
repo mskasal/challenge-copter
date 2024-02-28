@@ -1,4 +1,5 @@
 import os
+from typing import List
 from pickletools import pyset
 from fastapi import APIRouter, FastAPI
 from starlette.middleware.cors import CORSMiddleware
@@ -6,34 +7,6 @@ from pydantic import BaseModel
 import psycopg2
 
 api_router = APIRouter(prefix="/api")
-
-class Flight(BaseModel):
-    title: str
-    status: str
-    desc: str
-    id: str
-
-@api_router.get("/health", include_in_schema=False)
-def healthcheck():
-    """Check if API is up and running."""
-    return {"status": "ok"}
-
-
-@api_router.get("/flights", response_model=List[Flight])
-async def get_flights():
-    return [] 
-
-@api_router.post("/flight", response_model=Flight)
-async def add_flight(flight: Flight):
-    return flight
-
-@api_router.patch("/flight/{flight_id}", response_model=Flight)
-async def update_flight(flight_id: int, flight: Flight):
-    return flight
-
-@api_router.delete("/flight/{flight_id}")
-async def delete_flight(flight_id: int):
-    return {"status": "ok"}
 
 app = FastAPI(
     title="volocopter_code_challenge",
@@ -45,12 +18,13 @@ DATABASE_USER = os.environ.get("DATABASE_USER")
 DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD")
 DATABASE_NAME = os.environ.get("DATABASE_NAME")
 
-class Flight(BaseModel):
-    id: int
+class FlightPreview(BaseModel):
     title: str
     status: str
     description: str = None
 
+class Flight(FlightPreview):
+    id: int
 
 conn_string = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}/{DATABASE_NAME}"
 connection = psycopg2.connect(conn_string)
@@ -80,8 +54,26 @@ def create_table_if_not_exists():
 
 create_table_if_not_exists()
 
-@app.post("/flights/", response_model=Flight)
-def create_flight(flight: Flight):
+@api_router.get("/health", include_in_schema=False)
+def healthcheck():
+    """Check if API is up and running."""
+    return {"status": "ok"}
+
+@api_router.get("/flights/", response_model=List[Flight])
+def get_all_flights():
+    query = """
+        SELECT id, title, status, description
+        FROM flights;
+    """
+    results = execute_query(query)
+    flights = []
+    for result in results:
+        flights.append(dict(zip(['id', 'title', 'status', 'description'], result)))
+    return flights
+
+
+@api_router.post("/flights/", response_model=Flight)
+def create_flight(flight: FlightPreview):
     query = f"""
         INSERT INTO flights (title, status, description)
         VALUES ('{flight.title}', '{flight.status}', '{flight.description}')
@@ -93,7 +85,7 @@ def create_flight(flight: Flight):
     else:
         raise HTTPException(status_code=404, detail="Flight not found")
 
-@app.put("/flights/{flight_id}/", response_model=Flight)
+@api_router.patch("/flights/{flight_id}/", response_model=Flight)
 def update_flight(flight_id: int, flight: Flight):
     if flight.status not in ["pre", "now", "post"]:
         raise HTTPException(status_code=400, detail="Invalid status value. Allowed values: 'pre', 'now', 'post'")
@@ -112,7 +104,7 @@ def update_flight(flight_id: int, flight: Flight):
     else:
         raise HTTPException(status_code=404, detail="Flight not found")
 
-@app.delete("/flights/{flight_id}/", response_model=Flight)
+@api_router.delete("/flights/{flight_id}/", response_model=Flight)
 def delete_flight(flight_id: int):
     query = f"""
         DELETE FROM flights
@@ -129,7 +121,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["POST, PATCH. GET, DELETE"],
+    allow_methods=["POST, GET, PATCH, DELETE"],
     allow_headers=["*"],
 )
 

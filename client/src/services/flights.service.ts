@@ -6,17 +6,17 @@ export async function getFlights() {
 }
 
 export async function getFlightById(id: string) {
-  return await get<FlightType>("/flight", id);
+  return await get<FlightType>("/flights", id);
 }
 
 export async function saveFlight(data: FlightTypePreview) {
-  return await post<FlightTypePreview>("/flight", data);
+  return await post<FlightTypePreview>("/flights", data);
 }
 
 export async function updateFlightById(data: FlightType, id: string) {
-  return await patch<FlightType>("/flight", data, id);
+  return await patch<FlightType>("/flights", data, id);
 }
 
 export async function removeFlightById(id: string) {
-  return await del<FlightType>("/flight", id);
+  return await del<FlightType>("/flights", id);
 }
